@@ -25,26 +25,71 @@ class LoginViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    func signup() {
+    
+    @IBAction func signUpButtonTapped(_ sender: UIButton)
+    {
         var user = PFUser()
         user.username = emailField.text
+        print("emailField.text = \(emailField.text)")
         user.password = passField.text
+        print("passField.text = \(passField.text)")
         user.email = emailField.text
+        print("emailField.text = \(emailField.text)")
+        
         // other fields can be set just like with PFObject
 
         
         user.signUpInBackground { (succeeded: Bool, error : Error?) in
             if error != nil
             {
+                /* show alert controller with error string */
                 let errorString = error!.localizedDescription
-                let alertView = UIAlertController(title:"Error", message: errorString, preferredStyle: UIAlertControllerStyle.alert)
-                self.present(alertView, animated:true, completion: nil)
+                let alertController = UIAlertController(title:"Error", message: errorString, preferredStyle: UIAlertControllerStyle.alert)
+                let DestructiveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("Destructive")
+                }
+                
+                // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
+                let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("OK")
+                }
+                
+                alertController.addAction(DestructiveAction)
+                alertController.addAction(okAction)
+                
+                self.present(alertController, animated:true, completion: nil)
                 // Show the errorString somewhere and let the user try again.
             } else {
                 // Hooray! Let them use the app now.
+                print("sign up succeeded")
             }
         }
     }
+    
+    @IBAction func loginButtonTapped(_ sender: UIButton)
+    {
+        let username = emailField.text!
+        print("emailField.text = \(emailField.text)")
+        let password = passField.text!
+        print("passField.text = \(passField.text)")
+        
+        let user = PFUser.logInWithUsername(inBackground: username, password: password)
+        print("user = \(user)")
+        
+        if (PFUser.current()?.isAuthenticated)!
+        {
+            print("current user authenticated")
+            self.presentChatVC()
+        }
+    }
+    
+    func presentChatVC()
+    {
+        performSegue(withIdentifier: "modalSegue", sender: nil)
+    }
+    
 
     /*
     // MARK: - Navigation
